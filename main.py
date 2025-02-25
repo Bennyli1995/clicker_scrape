@@ -67,7 +67,7 @@ def download_and_process_image(url_timestamp):
         if re.search(r'attendance code|clicker question', text.lower()):
             # Pattern for words like "LUT DESERT" - uppercase words with spaces between
             # that aren't part of URLs or other non-code text
-            code_pattern = r'(?<![a-zA-Z0-9:/.])[A-Z]{2,}(?: [A-Z]{2,})+(?![a-zA-Z0-9:/.])'
+            code_pattern = r'(?<![a-zA-Z0-9:/.])[A-Z]{2,}(?: [A-Z]{2,})*(?![a-zA-Z0-9:/.])'
             matches = re.findall(code_pattern, text)
             
             # Filter out false positives
@@ -79,7 +79,7 @@ def download_and_process_image(url_timestamp):
             if filtered_matches:
                 # Save positive matches to a special directory
                 os.makedirs("attendance_codes", exist_ok=True)
-                for i, match in enumerate(filtered_matches):
+                for _, match in enumerate(filtered_matches):
                     code_filename = f"attendance_codes/code_{match.replace(' ', '_')}_{timestamp.replace(':', '_')}.jpg"
                     image.save(code_filename)
                 
@@ -151,7 +151,7 @@ def extract_attendance_codes(panopto_url, wait_for_login=False):
         
         # If login is required, give time for the user to log in
         if wait_for_login:
-            print("Please log in to the Panopto site in the browser window...")
+            print("Waiting for 5 seconds...")
             time.sleep(5)  # Adjust time as needed for login
         
         # Wait for the page to load
@@ -298,7 +298,7 @@ if __name__ == "__main__":
     panopto_url = "https://ubc.ca.panopto.com/Panopto/Pages/Viewer.aspx?id=ec0195ab-a288-459c-90b3-b25a010b1d0d"
     
     # Set to True if the page requires login
-    wait_for_login = True
+    wait_for_login = False
     
     # Extract attendance codes
     codes = extract_attendance_codes(panopto_url, wait_for_login)
